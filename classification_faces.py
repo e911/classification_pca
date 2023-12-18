@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+from pca_faces import pca_eigenfaces
 
 
 def load_orl_images(data_folder, subjects=40):
@@ -23,7 +24,8 @@ def load_orl_images(data_folder, subjects=40):
 
     return np.array(images), np.array(labels)
 
-def split_dataset(images, labels, train_subjects=40, face_recognition = True):
+
+def split_dataset(images, labels, train_subjects=40, face_recognition=True):
     train_images = []
     train_labels = []
     test_images = []
@@ -33,8 +35,8 @@ def split_dataset(images, labels, train_subjects=40, face_recognition = True):
 
     for label in unique_labels[:train_subjects]:
         label_indices = np.where(labels == label)[0]
-        if label <=35:
-            train_indices, test_indices = train_test_split(label_indices, test_size=2/10.0, random_state=42)
+        if label <= 35:
+            train_indices, test_indices = train_test_split(label_indices, test_size=2 / 10.0, random_state=42)
 
             train_images.extend(images[train_indices])
 
@@ -54,6 +56,7 @@ def split_dataset(images, labels, train_subjects=40, face_recognition = True):
                 test_labels.extend(labels[label_indices])
     return np.array(train_images), np.array(train_labels), np.array(test_images), np.array(test_labels)
 
+
 def get_p_order_data(data, order):
     result = []
 
@@ -64,6 +67,7 @@ def get_p_order_data(data, order):
 
         result.append(r)
     return np.array(result)
+
 
 def add_bias(data):
     return np.insert(data, 0, 1.0, axis=1)
@@ -76,19 +80,29 @@ def x_data_preprocess(x_data, order):
     x_feature = x_feature.T
     return x_feature
 
+
+def project_data(data, eigenvectors, mean_X, n_pcs):
+    centered_data = data - mean_X
+    coefficients = np.dot(centered_data, eigenvectors[:, :n_pcs])
+    return coefficients
+
+
 if __name__ == "__main__":
     data_folder = os.getcwd() + "/att_faces"
 
     images, labels = load_orl_images(data_folder, 40)
-    train_data, train_labels, test_data, test_labels = split_dataset(images,labels, 40, True)
+    train_data, train_labels, test_data, test_labels = split_dataset(images, labels, 40, True)
 
+    # scaler = StandardScaler()
+    # Z_train = scaler.fit_transform(train_data)
+    # Z_test = scaler.fit_transform(test_data)
+    #
+    # Z_train = x_data_preprocess(Z_train, 1)
+    # Z_test = x_data_preprocess(Z_test, 1)
 
-    scaler = StandardScaler()
-    Z_train = scaler.fit_transform(train_data)
-    Z_test = scaler.fit_transform(test_data)
-
-    Z_train = x_data_preprocess(Z_train, 1)
-    Z_test = x_data_preprocess(Z_test, 1)
+    eigenvalues, eigenvectors, mean_face, _, n_pcs_90 = pca_eigenfaces(train_data)
+    Z_train = project_data(train_data, eigenvectors, mean_face, n_pcs_90).T
+    Z_test = project_data(test_data, eigenvectors, mean_face, n_pcs_90).T
 
     nclass = len(np.unique(train_labels))
     ntrain = len(train_labels)
@@ -145,4 +159,3 @@ if __name__ == "__main__":
     print(f'Accuracy: {accuracy:.2f}%')
     # print('Weight Matrix W:')
     # print(W)
-
