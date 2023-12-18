@@ -76,6 +76,7 @@ if __name__ == "__main__":
     data_folder = os.getcwd() + "/att_faces"
 
     images, labels = load_orl_images(data_folder)
+    print(images.shape)
 
     eigenvalues, eigenvectors, mean_face, centered_face, n_pcs_90 = pca_eigenfaces(images)
     print(eigenvalues, eigenvectors, mean_face)
