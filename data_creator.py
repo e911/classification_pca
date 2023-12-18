@@ -1,41 +1,18 @@
-#from auto_encoder import Autoencoder
 import numpy as np
-#import torch
+import torch
 import os
 import cv2
 import random
 from PIL import Image
 from pca_faces import pca_eigenfaces
 from classification_faces import project_data
-
-
-def load_autoencoder_model(model_path, n_inputs, encoding_dim, device):
-    autoencoder = Autoencoder(n_inputs, encoding_dim)
-    autoencoder.load_state_dict(torch.load(model_path))
-    autoencoder.to(device)
-    autoencoder.eval()
-    return autoencoder
-
-def get_bottleneck_representation(em, input_dim, encoding_dim,task):
-
-    model_path = f"./trained_models/autoencoder_gc_pn_128_{task}.pth"  # Path to the saved model
-    n_inputs = input_dim  # Input dimension
-    encoding_dim = encoding_dim  # Latent space dimension
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    autoencoder = load_autoencoder_model(model_path, n_inputs, encoding_dim, device)
-    with torch.no_grad():
-        bottleneck_representation = autoencoder.encoder(em)
-    return bottleneck_representation
-
-def get_ae_data(data,task):
-    print('Generating data using autoencoder')
-    return get_bottleneck_representation(data,10304,128,task=task)
+import time
 
 def get_pca_data(train_data,test_data):
     print('Generating data using PCA')
     eigenvalues, eigenvectors, mean_face, _, n_pcs_90 = pca_eigenfaces(train_data)
-    Z_train = project_data(train_data, eigenvectors, mean_face, n_pcs_90).T
-    Z_test = project_data(test_data, eigenvectors, mean_face, n_pcs_90).T
+    Z_train = project_data(train_data, eigenvectors, mean_face, n_pcs_90)
+    Z_test = project_data(test_data, eigenvectors, mean_face, n_pcs_90)
     return Z_train,Z_test
 
 
@@ -104,8 +81,10 @@ def lda(X, y, num_components=None):
         mean_diff = (mean_vec - mean_overall).reshape(n_features, 1)
         S_B += n_c * (mean_diff).dot(mean_diff.T)
     print('calculating inverse')
+    start= time.time()
     A = np.linalg.inv(S_W).dot(S_B)
-    print('Finished')
+    end = time.time()
+    start= time.time()
     eigenvalues, eigenvectors = np.linalg.eig(A)
 
     # Sort the eigenvectors by decreasing eigenvalues
@@ -165,11 +144,13 @@ def load_train_test_data(data_folder='./att_faces',task='identification'):
 if __name__=="__main__":
 
     print("Start")
-    train_data, train_label, val_data, test_label = load_train_test_data("./att_faces",'recognition')
-    train_arr,test_data_arr = get_lda_data(train_data,train_label,val_data)
-    print(train_arr)
-    print(test_data_arr)
+    train_data, train_label, val_data, test_label = load_train_test_data("./att_faces",'identification')
+    train_arr,test_data_arr = get_pca_data(train_data,val_data)
+    print(train_arr.shape)
+    print(train_arr.dtype)
+    print(test_data_arr.shape)
+    print(test_data_arr.dtype)
 
-    # print(imgs.shape)
+    #print(imgs.shape)
     
     
