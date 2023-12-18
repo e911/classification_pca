@@ -24,6 +24,25 @@ def load_orl_images(data_folder, subjects=40):
 
     return np.array(images), np.array(labels)
 
+def load_non_faced_images(face_recognition=True):
+    images = []
+    labels = []
+    data_folder = os.getcwd() + "/non_faces"
+    for file in os.scandir(data_folder):
+        image_path = file.path
+        img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+        img = cv2.resize(img, (112, 92))
+        img_flattened = img.flatten()
+        images.append(img_flattened)
+        if face_recognition:
+            labels.append(2)
+        else:
+            labels.append(99)
+
+    X_train, X_test, y_train, y_test = train_test_split(np.array(images), np.array(labels), test_size=0.3, random_state=42)
+
+    return X_train, y_train, X_test, y_test
+
 
 def split_dataset(images, labels, train_subjects=40, face_recognition=True):
     train_images = []
@@ -92,13 +111,12 @@ if __name__ == "__main__":
 
     images, labels = load_orl_images(data_folder, 40)
     train_data, train_labels, test_data, test_labels = split_dataset(images, labels, 40, True)
+    # non_faced_train_data, non_faced_train_labels, non_faced_test_data, non_faced_test_labels  = load_non_faced_images(True)
 
-    # scaler = StandardScaler()
-    # Z_train = scaler.fit_transform(train_data)
-    # Z_test = scaler.fit_transform(test_data)
-    #
-    # Z_train = x_data_preprocess(Z_train, 1)
-    # Z_test = x_data_preprocess(Z_test, 1)
+    # train_data += non_faced_train_data
+    # train_labels += non_faced_train_labels
+    # test_data += non_faced_test_data
+    # test_labels += non_faced_test_labels
 
     eigenvalues, eigenvectors, mean_face, _, n_pcs_90 = pca_eigenfaces(train_data)
     Z_train = project_data(train_data, eigenvectors, mean_face, n_pcs_90).T
@@ -135,12 +153,9 @@ if __name__ == "__main__":
 
     train_data, train_labels, test_data, test_labels = split_dataset(images, labels, 40, False)
 
-    scaler = StandardScaler()
-    Z_train = scaler.fit_transform(train_data)
-    Z_test = scaler.fit_transform(test_data)
-
-    Z_train = x_data_preprocess(Z_train, 1)
-    Z_test = x_data_preprocess(Z_test, 1)
+    eigenvalues, eigenvectors, mean_face, _, n_pcs_90 = pca_eigenfaces(train_data)
+    Z_train = project_data(train_data, eigenvectors, mean_face, n_pcs_90).T
+    Z_test = project_data(test_data, eigenvectors, mean_face, n_pcs_90).T
 
     nclass = len(np.unique(train_labels))
     ntrain = len(train_labels)
