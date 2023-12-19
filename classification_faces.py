@@ -118,9 +118,9 @@ if __name__ == "__main__":
     # test_data = np.concatenate((test_data, non_faced_test_data), axis=0)
     # test_labels = np.concatenate((test_labels, non_faced_test_labels), axis=0)
 
-    eigenvalues, eigenvectors, mean_face, _, n_pcs_90 = pca_eigenfaces(train_data)
-    Z_train = project_data(train_data, eigenvectors, mean_face, n_pcs_90).T
-    Z_test = project_data(test_data, eigenvectors, mean_face, n_pcs_90).T
+    eigenvalues, eigenvectors, mean_face, _, n_pcs_95 = pca_eigenfaces(train_data)
+    Z_train = project_data(train_data, eigenvectors, mean_face, n_pcs_95).T
+    Z_test = project_data(test_data, eigenvectors, mean_face, n_pcs_95).T
 
     nclass = len(np.unique(train_labels))
     ntrain = len(train_labels)
@@ -147,9 +147,9 @@ if __name__ == "__main__":
     # test_data = np.concatenate((test_data, non_faced_test_data), axis=0)
     # test_labels = np.concatenate((test_labels, non_faced_test_labels), axis=0)
 
-    eigenvalues, eigenvectors, mean_face, _, n_pcs_90 = pca_eigenfaces(train_data)
-    Z_train = project_data(train_data, eigenvectors, mean_face, n_pcs_90).T
-    Z_test = project_data(test_data, eigenvectors, mean_face, n_pcs_90).T
+    eigenvalues, eigenvectors, mean_face, _, n_pcs_95 = pca_eigenfaces(train_data)
+    Z_train = project_data(train_data, eigenvectors, mean_face, n_pcs_95).T
+    Z_test = project_data(test_data, eigenvectors, mean_face, n_pcs_95).T
 
     nclass = len(np.unique(train_labels))
     ntrain = len(train_labels)
