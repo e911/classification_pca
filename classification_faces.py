@@ -107,20 +107,20 @@ def project_data(data, eigenvectors, mean_X, n_pcs):
 
 
 if __name__ == "__main__":
-    data_folder = os.getcwd() + "/att_faces"
-
-    images, labels = load_orl_images(data_folder, 40)
-    train_data, train_labels, test_data, test_labels = split_dataset(images, labels, 40, True)
     # non_faced_train_data, non_faced_train_labels, non_faced_test_data, non_faced_test_labels  = load_non_faced_images(True)
 
-    # train_data += non_faced_train_data
-    # train_labels += non_faced_train_labels
-    # test_data += non_faced_test_data
-    # test_labels += non_faced_test_labels
+    faced_data_folder = os.getcwd() + "/att_faces"
+    images, labels = load_orl_images(faced_data_folder, 40)
 
-    eigenvalues, eigenvectors, mean_face, _, n_pcs_90 = pca_eigenfaces(train_data)
-    Z_train = project_data(train_data, eigenvectors, mean_face, n_pcs_90).T
-    Z_test = project_data(test_data, eigenvectors, mean_face, n_pcs_90).T
+    train_data, train_labels, test_data, test_labels = split_dataset(images, labels, 40, True)
+    # train_data = np.concatenate((train_data, non_faced_train_data), axis=0)
+    # train_labels = np.concatenate((train_labels, non_faced_train_labels), axis=0)
+    # test_data = np.concatenate((test_data, non_faced_test_data), axis=0)
+    # test_labels = np.concatenate((test_labels, non_faced_test_labels), axis=0)
+
+    eigenvalues, eigenvectors, mean_face, _, n_pcs_95 = pca_eigenfaces(train_data)
+    Z_train = project_data(train_data, eigenvectors, mean_face, n_pcs_95).T
+    Z_test = project_data(test_data, eigenvectors, mean_face, n_pcs_95).T
 
     nclass = len(np.unique(train_labels))
     ntrain = len(train_labels)
@@ -140,22 +140,16 @@ if __name__ == "__main__":
     # print('Weight Matrix W:')
     # print(W)
 
-    fig, ax = plt.subplots(figsize=(10, 8))
-    ax.scatter(train_data[:, 0], train_data[:, 1], c=train_labels, marker='o', label='Training Data')
-    ax.scatter(test_data[:, 0], test_data[:, 1], c=predicted_labels, marker='x', label='Test Data (Predicted)')
-
-    ax.set_xlabel('Feature 1')
-    ax.set_ylabel('Feature 2')
-    ax.set_title('Scatter Matrix with Training and Test Data')
-    ax.legend()
-
-    plt.show()
-
+    # non_faced_train_data, non_faced_train_labels, non_faced_test_data, non_faced_test_labels  = load_non_faced_images(False)
     train_data, train_labels, test_data, test_labels = split_dataset(images, labels, 40, False)
+    # train_data = np.concatenate((train_data, non_faced_train_data), axis=0)
+    # train_labels = np.concatenate((train_labels, non_faced_train_labels), axis=0)
+    # test_data = np.concatenate((test_data, non_faced_test_data), axis=0)
+    # test_labels = np.concatenate((test_labels, non_faced_test_labels), axis=0)
 
-    eigenvalues, eigenvectors, mean_face, _, n_pcs_90 = pca_eigenfaces(train_data)
-    Z_train = project_data(train_data, eigenvectors, mean_face, n_pcs_90).T
-    Z_test = project_data(test_data, eigenvectors, mean_face, n_pcs_90).T
+    eigenvalues, eigenvectors, mean_face, _, n_pcs_95 = pca_eigenfaces(train_data)
+    Z_train = project_data(train_data, eigenvectors, mean_face, n_pcs_95).T
+    Z_test = project_data(test_data, eigenvectors, mean_face, n_pcs_95).T
 
     nclass = len(np.unique(train_labels))
     ntrain = len(train_labels)
