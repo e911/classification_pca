@@ -153,6 +153,5 @@ if __name__=="__main__":
     print(test_data_arr.shape)
     print(test_data_arr.dtype)
 
-    #print(imgs.shape)
     
     
