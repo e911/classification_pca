@@ -41,22 +41,20 @@ def pca_eigenfaces(images):
     n_pcs_90 = np.argmax(cumulative_variance_ratio > 0.90) + 1
     print(f"Number of PCs for 90% variance: {n_pcs_90}")
 
-    plt.plot(cumulative_variance_ratio, marker='o')
-    plt.xlabel('Number of Principal Components')
-    plt.ylabel('Cumulative Explained Variance Ratio')
-    plt.title('Cumulative Variance Ratio vs. Number of PCs')
-    plt.grid(True)
-    plt.show()
-
     return sorted_eigenvalues, sorted_eigenvectors, mean_X, centered_X, n_pcs_90
 
 
-def visualize_eigenfaces(eigenvectors, num_faces=8):
-    fig, axes = plt.subplots(1, num_faces, figsize=(12, 3))
+def visualize_eigenfaces(eigenvectors, num_faces=20, faces_per_row=10):
+    num_rows = num_faces // faces_per_row
+    fig, axes = plt.subplots(num_rows, faces_per_row, figsize=(14, 3 * num_rows))
+
     for i in range(num_faces):
-        eigenface = np.real(eigenvectors[:, i]).reshape(112,92)
-        axes[i].imshow(eigenface, cmap='gray')
-        axes[i].set_title(f'Eigenface {i + 1}')
+        row = i // faces_per_row
+        col = i % faces_per_row
+        eigenface = np.real(eigenvectors[:, i]).reshape(112, 92)
+        axes[row, col].imshow(eigenface, cmap='gray')
+        axes[row, col].set_title(f'Eigenface {i + 1}')
+
     plt.show()
 
 
@@ -72,12 +70,24 @@ def reconstruct_image(sorted_eigenvectors, centered_X, mean_X, n_pcs_90):
     axes[1].set_title(f'Reconstructed Image using {n_pcs_90} PCs')
     plt.show()
 
+def cumulative_variance(sorted_eigenvalues):
+    explained_variance_ratio = sorted_eigenvalues / np.sum(sorted_eigenvalues)
+    cumulative_variance_ratio = np.cumsum(explained_variance_ratio)
+    plt.plot(cumulative_variance_ratio, marker='o')
+    plt.xlabel('Number of Principal Components')
+    plt.ylabel('Cumulative Explained Variance Ratio')
+    plt.title('Cumulative Variance Ratio vs. Number of PCs')
+    plt.grid(True)
+    plt.show()
+
+
 if __name__ == "__main__":
     data_folder = os.getcwd() + "/att_faces"
 
     images, labels = load_orl_images(data_folder)
 
     eigenvalues, eigenvectors, mean_face, centered_face, n_pcs_90 = pca_eigenfaces(images)
+    cumulative_variance(eigenvalues)
     print(eigenvalues, eigenvectors, mean_face)
     visualize_eigenfaces(eigenvectors)
     for num_faces in range(1, 11):
