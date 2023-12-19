@@ -17,3 +17,6 @@ python pca_faces.py
 ```bash
 python classification_face.py
 ```
+
+
+4. To test the rf model, first  train the autoencoder model, then run the rf_clasifier and rf_multi-class classifier
