@@ -60,6 +60,8 @@ def load_and_process_images(directory, num_images=400):
 
     return processed_images
 
+def normalize_images(X):
+    return X / 255.0
 
 def lda(X, y, num_components=None):
     if(num_components==None):
@@ -135,7 +137,7 @@ def load_train_test_data(data_folder='./att_faces',task='identification'):
     print("test images",shuffled_test_data.shape)
     print("test labels",shuffled_test_labels.shape)
 
-    return shuffled_train_data,shuffled_train_labels,shuffled_test_data,shuffled_test_labels
+    return shuffled_train_data / 255.0,shuffled_train_labels / 255.0 ,shuffled_test_data / 255.0,shuffled_test_labels / 255.0
 
 
     

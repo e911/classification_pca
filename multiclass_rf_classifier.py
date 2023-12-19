@@ -84,8 +84,6 @@ def train_rf(dim_reduction):
 
 
 if __name__=="__main__":
-
-
     train_rf("ae")
     train_rf("pca")
     train_rf("lda")
