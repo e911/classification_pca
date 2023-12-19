@@ -123,7 +123,7 @@ def load_train_test_data(data_folder='./att_faces',task='identification'):
         negative_test_indices=   [x+400 for x in test_images_indices]
         train_labels= np.concatenate((Y[train_images_indices,:],Y[negative_train_indices,:]))
         test_labels=  np.concatenate((Y[test_images_indices,:],Y[negative_test_indices,:])) 
-        negatives= load_and_process_images("./non_face", num_images=400)
+        negatives= load_and_process_images("./non_faces", num_images=400)
         train_images = np.concatenate((train_images,negatives[train_images_indices]))
         test_images = np.concatenate((test_images,negatives[test_images_indices]))
     shuffled_indices = np.random.permutation(len(train_images))
@@ -137,7 +137,7 @@ def load_train_test_data(data_folder='./att_faces',task='identification'):
     print("test images",shuffled_test_data.shape)
     print("test labels",shuffled_test_labels.shape)
 
-    return shuffled_train_data / 255.0,shuffled_train_labels / 255.0 ,shuffled_test_data / 255.0,shuffled_test_labels / 255.0
+    return shuffled_train_data / 255.0,shuffled_train_labels ,shuffled_test_data / 255.0,shuffled_test_labels 
 
 
     

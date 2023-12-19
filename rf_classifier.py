@@ -9,6 +9,8 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
 from auto_encoder import get_ae_data
+import matplotlib.pyplot as plt
+
 
 
 
@@ -49,18 +51,35 @@ def train_rf(dim_reduction):
     print("GS Time - ", time.time()-start_time)
     print("Best Params - ", grid_search.best_params_)
 
-    random_forest = RandomForestClassifier(max_depth=grid_search.best_params_['max_depth'], max_features=grid_search.best_params_['max_features'], min_samples_leaf=grid_search.best_params_['min_samples_leaf'],min_samples_split=grid_search.best_params_['min_samples_split'],n_estimators=grid_search.best_params_['n_estimators'],bootstrap=grid_search.best_params_['bootstrap'])
-    #random_forest = RandomForestClassifier(max_depth=80, max_features=3, min_samples_leaf=3,min_samples_split=8,n_estimators=8,bootstrap=True)
+    #random_forest = RandomForestClassifier(max_depth=grid_search.best_params_['max_depth'], max_features=grid_search.best_params_['max_features'], min_samples_leaf=grid_search.best_params_['min_samples_leaf'],min_samples_split=grid_search.best_params_['min_samples_split'],n_estimators=grid_search.best_params_['n_estimators'],bootstrap=grid_search.best_params_['bootstrap'])
+    random_forest = RandomForestClassifier(max_depth=80, max_features=3, min_samples_leaf=3,min_samples_split=8,n_estimators=8,bootstrap=True)
     random_forest.fit(train_arr.cpu(),train_label)
 
     print('Testing...')
-    
 
-    print("Label shape - ", test_label.shape)
-    print("Input shape - ", test_data_arr.shape)
 
     pred_label = random_forest.predict(test_data_arr.cpu())
     print(pred_label.shape)
+
+        
+    
+    print("Label shape - ", test_label.shape)
+    print("Input shape - ", test_data_arr.shape)
+    #False postives and negatives
+    # for i in range(len(test_label)): 
+    #     if(np.argmax(pred_label[i],0)!=np.argmax(test_label[i],0)):
+    #         fig, axes = plt.subplots(1, 1, figsize=(14, 3))
+    #         label=''
+    #         if(np.argmax(pred_label[i],0)==1):
+    #             label=f'False positive {dim_reduction}'
+    #         if(np.argmax(pred_label[i],0)==0):
+    #             label=f'False negative {dim_reduction}'
+    #         print(np.argmax(pred_label[i],0),test_label[i])
+    #         img= np.real(val_data[i]*255.0).reshape(112, 92)
+    #         axes.imshow(img, cmap='gray')
+    #         axes.set_title(f'{label}')
+    #         plt.show()
+    
 
     ac,pr,re,f1 = get_metrics_classicalml(np.argmax(test_label,1), np.argmax(pred_label,1))
     cm = confusion_matrix(np.argmax(test_label,1), np.argmax(pred_label,1))

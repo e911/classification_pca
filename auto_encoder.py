@@ -132,14 +132,14 @@ def train_autoencoder(batch_size, num_epochs,n_inputs,encoding_dim, save_interva
         print(f"Time for epoch {epoch+1} - ", time.time()-start_time)
 
     plt.figure(figsize=(10,6))
-    plt.plot(train_losses,label='Training Loss')
+    plt.plot(train_losses,label=f'Training Loss {task}')
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
     plt.legend()
     plt.grid(True)
     plt.show()
     plt.figure(figsize=(10,6))
-    plt.plot(val_losses,label='training Loss')
+    plt.plot(val_losses,label=f'validation Loss {task}')
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
     plt.legend()
@@ -182,7 +182,7 @@ def get_ae_data(data,task):
 if __name__=="__main__":
 
     print("Start")
-    train_autoencoder(8,30,10304,256,save_interval=30,model_shorthand="gc",task='recognition')
-    train_autoencoder(8,30,10304,256,save_interval=30,model_shorthand="gc",task='identification')
+    train_autoencoder(8,50,10304,256,save_interval=30,model_shorthand="gc",task='recognition')
+    train_autoencoder(8,50,10304,256,save_interval=30,model_shorthand="gc",task='identification')
     print('Finished training auto-encoder models')
 
