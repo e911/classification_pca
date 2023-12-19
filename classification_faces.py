@@ -37,7 +37,7 @@ def load_non_faced_images(face_recognition=True):
         if face_recognition:
             labels.append(2)
         else:
-            labels.append(99)
+            labels.append(36)
 
     X_train, X_test, y_train, y_test = train_test_split(np.array(images), np.array(labels), test_size=0.3, random_state=42)
 
